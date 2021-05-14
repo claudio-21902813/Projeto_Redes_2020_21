@@ -1,5 +1,10 @@
 package cliente;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.Socket;
 import java.util.Scanner;
 
 public class Cliente extends Thread{
@@ -26,35 +31,94 @@ public class Cliente extends Thread{
      ##################
      */
 
+    private static String ip;
 
     public static void main(String[] args) {
         teclado = new Scanner(System.in);
-        inicia();
+        Cliente cliente = new Cliente();
+        cliente.start();
+        ip = args[0];
+        System.out.println(args[0]);
     }
 
-    private static void inicia()
-    {
-        Cliente clienteThread = new Cliente();
-        System.out.println(TEXTO_MENU);
-        String texto = "";
-
-        while (!(texto = teclado.nextLine()).equals("99"))
-        {
-            System.out.println("way");
-        }
-        System.out.println("a sair...");
-    }
-
-
-    /*
-    ##################
-    ###### Metodo RUN - Executa consoante cada pedido ######
-    ##################
-    */
+        /*
+        ##################
+        ###### Metodo RUN - Executa consoante cada pedido ######
+        ##################
+        */
     public void run()
     {
+        Socket socket = null;
+        try {
+            socket = new Socket(ip, 6500);
+            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintStream ps = new PrintStream(socket.getOutputStream());
+            /*ps.println("Ola Servidor !!"); // escreve mensagem na socket
+            // imprime resposta do servidor
+            System.out.println("Recebido : " + br.readLine());
+            // termina socket*/
+            System.out.println(TEXTO_MENU);
+            String opcao = "";
+           do {
+               System.out.println("digite um comando-> ");
+               opcao = teclado.nextLine();
+               switch (opcao)
+               {
+                   case "1":{ // easy
+                       System.out.println(TEXTO_MENU);
+                       break;
+                   }
+                   case "2":{ // easy
+                       ps.println("2");
+                       System.out.println("****** ONLINE ******");
+                       System.out.println("  HOST       Status  ");
+                       String msg = br.readLine();
+                       while (!(msg.equals("")))
+                       {
+                           System.out.println(msg);
+                           msg = br.readLine();
+                       }
+                       break;
+                   }
+                   case "4":
+                   {
+                       ps.println("4");
+                       System.out.println("****** Lista Branca ******");
+                       System.out.println("  HOST       Status  ");
+                       String msg = br.readLine();
+                       while (!(msg.equals("")))
+                       {
+                           System.out.println(msg);
+                           msg = br.readLine();
+                       }
+                      break;
+                   }
+                   case "5":
+                   {
+                       ps.println("5");
+                       System.out.println("****** Lista Negra ******");
+                       System.out.println("  HOST       Status  ");
+                       String msg = br.readLine();
+                       while (!(msg.equals("")))
+                       {
+                           System.out.println(msg);
+                           msg = br.readLine();
+                       }
+                       break;
+                   }
+                   case "99":{
+                       System.out.println("conexao fechou!!");
+                       socket.close();
+                       break;
+                   }
+               }
 
+           }while (!opcao.equals("99"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
 
 
 }
