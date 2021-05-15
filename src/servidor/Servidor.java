@@ -23,7 +23,7 @@ public class Servidor {
         listaBranca.put("127.0.0.2","OFFLINE");
         listaBranca.put("127.0.0.3","OFFLINE");
 
-        //default listaBranca
+        //default listaNegra
         listaNegra = new HashMap<>();
         listaNegra.put("192.168.1.222","OFFLINE");
         listaNegra.put("192.168.1.223","OFFLINE");
@@ -43,8 +43,6 @@ public class Servidor {
                     listaOnline.put(host,"ONLINE");
                 }
             }
-
-
             Thread t0 = new Thread(new Server_Manager(socket));//criar thread
             t0.start();
         }
@@ -105,26 +103,20 @@ class Server_Manager implements Runnable{
                         break;
                     }
                     case "2":{
-                        boolean running = true;
                         udp_socket = new DatagramSocket(4445);
-                        while (running) {
                             try {
                                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                                 udp_socket.receive(packet);
                                 InetAddress address = packet.getAddress();
                                 int port = packet.getPort();
                                 packet = new DatagramPacket(buf, buf.length, address, port);
-                                String received
-                                        = new String(packet.getData(), 0, packet.getLength());
-                                if (received.equals("end")) {
-                                    running = false;
-                                    continue;
-                                }
+                                String received = new String(packet.getData(), 0, packet.getLength());
                                 udp_socket.send(packet);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                        }
+                        udp_socket.close();
+                        printStream.println("UDP a fechar...");
                         break;
                     }
                     case "4":{
@@ -147,8 +139,6 @@ class Server_Manager implements Runnable{
                     }
                 }
             }while (!pedido.equals("99"));
-            socket.close();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
