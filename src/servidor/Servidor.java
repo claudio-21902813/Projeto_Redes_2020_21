@@ -4,8 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 import java.util.HashMap;
 
 public class Servidor {
@@ -57,13 +56,17 @@ class Server_Manager implements Runnable{
     private BufferedReader reader;
     private PrintStream printStream;
 
+    //UDP Variaveis
+    private DatagramSocket udp_socket;
+    private InetAddress address;
+    private byte[] buf = new byte[256];
 
-
-    public Server_Manager(Socket socket) throws IOException {
+    public Server_Manager(Socket socket) throws IOException,SocketException,UnknownHostException {
         this.socket = socket;
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         printStream = new PrintStream(socket.getOutputStream());
     }
+
 
     /* codigo a executar numa thread separada para procotolos TCP */
     public void run(){
@@ -73,13 +76,36 @@ class Server_Manager implements Runnable{
                 pedido = reader.readLine();
                 switch (pedido)
                 {
-                    case "2":{
+                    case "1":{
                         StringBuilder resposta = new StringBuilder();
                         for(String host:Servidor.listaOnline.keySet())
                         {
                             resposta.append(host).append("   ").append(Servidor.listaOnline.get(host)).append("\n");
                         }
                         printStream.println(resposta);
+                    }
+                    case "2":{
+                        boolean running = true;
+                        udp_socket = new DatagramSocket(4445);
+                        while (running) {
+                            try {
+                                DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                                udp_socket.receive(packet);
+                                InetAddress address = packet.getAddress();
+                                int port = packet.getPort();
+                                packet = new DatagramPacket(buf, buf.length, address, port);
+                                String received
+                                        = new String(packet.getData(), 0, packet.getLength());
+                                if (received.equals("end")) {
+                                    running = false;
+                                    continue;
+                                }
+                                udp_socket.send(packet);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        socket.close();
                     }
                     case "4":{
                         StringBuilder resposta = new StringBuilder();

@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.net.Socket;
+import java.net.*;
 import java.util.Scanner;
 
 public class Cliente extends Thread{
@@ -13,6 +13,12 @@ public class Cliente extends Thread{
     ## VARIAVEIS ##
     ###############
      */
+
+
+    private static String ip;
+    private byte[] buf = new byte[256];
+    private DatagramSocket udp_socket;
+    private InetAddress address;
 
     public static Scanner teclado;
     private static final String TEXTO_MENU = "MENU CLIENTE" +
@@ -25,27 +31,22 @@ public class Cliente extends Thread{
             "5 - Lista negra de utilizadores\n"+ //tcp
             "99 - Sair";
 
-    /*
-     ##################
-     ###### MAIN ######
-     ##################
-     */
-
-    private static String ip;
-
-    public static void main(String[] args) {
-        teclado = new Scanner(System.in);
-        Cliente cliente = new Cliente();
-        cliente.start();
-        ip = args[0];
-        System.out.println(args[0]);
-    }
-
         /*
         ##################
         ###### Metodo RUN - Executa consoante cada pedido ######
         ##################
         */
+
+    public Cliente(String address) throws SocketException,
+            UnknownHostException {
+        udp_socket = new DatagramSocket();
+        this.address = InetAddress.getByName(address);
+    }
+
+    public Cliente(){
+    }
+
+
     public void run()
     {
         Socket socket = null;
@@ -64,11 +65,11 @@ public class Cliente extends Thread{
                opcao = teclado.nextLine();
                switch (opcao)
                {
-                   case "1":{ // easy
+                   case "0":{ // easy
                        System.out.println(TEXTO_MENU);
                        break;
                    }
-                   case "2":{ // easy
+                   case "1":{ // easy
                        ps.println("2");
                        System.out.println("****** ONLINE ******");
                        System.out.println("  HOST       Status  ");
@@ -77,6 +78,20 @@ public class Cliente extends Thread{
                        {
                            System.out.println(msg);
                            msg = br.readLine();
+                       }
+                       break;
+                   }
+                   case "2":{//enviar msg a um host online
+                       try {
+                           Cliente client = new Cliente("");
+                           DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 4445);
+                           String received = new String(
+                                   packet.getData(), 0, packet.getLength());
+                           System.out.println(received);
+                       } catch (SocketException e) {
+                           e.printStackTrace();
+                       } catch (IOException e) {
+                           e.printStackTrace();
                        }
                        break;
                    }
@@ -119,6 +134,19 @@ public class Cliente extends Thread{
         }
     }
 
+        /*
+     ##################
+     ###### MAIN ######
+     ##################
+     */
+
+    public static void main(String[] args) {
+        teclado = new Scanner(System.in);
+        Cliente cliente = new Cliente();
+        cliente.start();
+        ip = args[0];
+        System.out.println(args[0]);
+    }
 
 
 }
