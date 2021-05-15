@@ -13,14 +13,15 @@ public class Servidor {
     static HashMap<String,String> listaNegra = new HashMap<>();
     static HashMap<String,String> listaOnline = new HashMap<>();
 
+
     public static void main(String[] args) throws IOException {
 
 
         //default listaBranca
         listaBranca = new HashMap<>();
         listaBranca.put("127.0.0.1","OFFLINE");
-        /*listaBranca.put("127.0.0.2","OFFLINE");
-        listaBranca.put("127.0.0.3","OFFLINE");*/
+        listaBranca.put("127.0.0.2","OFFLINE");
+        listaBranca.put("127.0.0.3","OFFLINE");
 
         //default listaBranca
         listaNegra = new HashMap<>();
@@ -55,6 +56,15 @@ class Server_Manager implements Runnable{
     private Socket socket;
     private BufferedReader reader;
     private PrintStream printStream;
+    private static final String TEXTO_MENU = "MENU CLIENTE" +
+            "\n"+
+            "0 - Menu Inicial\n"+
+            "1 - Listar utilizadores online\n"+//tcp
+            "2 - Enviar mensagem a um utilizador\n"+//tcp + udp
+            "3 - Enviar mensagens a todos os utilizadores\n"+ //tcp + udp
+            "4 - Lista branca de utilizadores\n"+ //tcp
+            "5 - Lista negra de utilizadores\n"+ //tcp
+            "99 - Sair\n";
 
     //UDP Variaveis
     private DatagramSocket udp_socket;
@@ -72,10 +82,19 @@ class Server_Manager implements Runnable{
     public void run(){
         try {
             String pedido = "";
+            printStream.println(TEXTO_MENU);
             do {
                 pedido = reader.readLine();
+                if(pedido==null){
+                    break;
+                }
                 switch (pedido)
                 {
+                    case "0":
+                    {
+                        printStream.println(TEXTO_MENU);
+                        break;
+                    }
                     case "1":{
                         StringBuilder resposta = new StringBuilder();
                         for(String host:Servidor.listaOnline.keySet())
@@ -83,6 +102,7 @@ class Server_Manager implements Runnable{
                             resposta.append(host).append("   ").append(Servidor.listaOnline.get(host)).append("\n");
                         }
                         printStream.println(resposta);
+                        break;
                     }
                     case "2":{
                         boolean running = true;
@@ -105,7 +125,7 @@ class Server_Manager implements Runnable{
                                 e.printStackTrace();
                             }
                         }
-                        socket.close();
+                        break;
                     }
                     case "4":{
                         StringBuilder resposta = new StringBuilder();

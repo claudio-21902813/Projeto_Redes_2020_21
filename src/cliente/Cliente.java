@@ -21,15 +21,6 @@ public class Cliente extends Thread{
     private InetAddress address;
 
     public static Scanner teclado;
-    private static final String TEXTO_MENU = "MENU CLIENTE" +
-            "\n\n"+
-            "0 - Menu Inicial\n"+
-            "1 - Listar utilizadores online\n"+//tcp
-            "2 - Enviar mensagem a um utilizador\n"+//tcp + udp
-            "3 - Enviar mensagens a todos os utilizadores\n"+ //tcp + udp
-            "4 - Lista branca de utilizadores\n"+ //tcp
-            "5 - Lista negra de utilizadores\n"+ //tcp
-            "99 - Sair";
 
         /*
         ##################
@@ -46,6 +37,17 @@ public class Cliente extends Thread{
     public Cliente(){
     }
 
+    public String sendEcho(String msg) throws IOException {
+        buf = msg.getBytes();
+        DatagramPacket packet
+                = new DatagramPacket(buf, buf.length, address, 4445);
+        udp_socket.send(packet);
+        packet = new DatagramPacket(buf, buf.length);
+        udp_socket.receive(packet);
+        String received = new String(
+                packet.getData(), 0, packet.getLength());
+        return received;
+    }
 
     public void run()
     {
@@ -54,11 +56,13 @@ public class Cliente extends Thread{
             socket = new Socket(ip, 6500);
             BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintStream ps = new PrintStream(socket.getOutputStream());
-            /*ps.println("Ola Servidor !!"); // escreve mensagem na socket
-            // imprime resposta do servidor
-            System.out.println("Recebido : " + br.readLine());
-            // termina socket*/
-            System.out.println(TEXTO_MENU);
+            String menu = br.readLine();
+            while (!(menu.equals("")))
+            {
+                System.out.println(menu);
+                menu = br.readLine();
+            }
+            //System.out.println(TEXTO_MENU);
             String opcao = "";
            do {
                System.out.println("digite um comando-> ");
@@ -66,11 +70,17 @@ public class Cliente extends Thread{
                switch (opcao)
                {
                    case "0":{ // easy
-                       System.out.println(TEXTO_MENU);
+                       ps.println("0");
+                       menu = br.readLine();
+                       while (!(menu.equals("")))
+                       {
+                           System.out.println(menu);
+                           menu = br.readLine();
+                       }
                        break;
                    }
                    case "1":{ // easy
-                       ps.println("2");
+                       ps.println("1");
                        System.out.println("****** ONLINE ******");
                        System.out.println("  HOST       Status  ");
                        String msg = br.readLine();
@@ -82,14 +92,14 @@ public class Cliente extends Thread{
                        break;
                    }
                    case "2":{//enviar msg a um host online
+                       System.out.println("Qual o ip a enviar a msg?");
+                       String texto_send = teclado.nextLine();
+                       System.out.println("Qual a mensagem?");
+                       String msg_udp = teclado.nextLine();
+                       ps.println("2");
                        try {
-                           Cliente client = new Cliente("");
-                           DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 4445);
-                           String received = new String(
-                                   packet.getData(), 0, packet.getLength());
-                           System.out.println(received);
-                       } catch (SocketException e) {
-                           e.printStackTrace();
+                           Cliente client = new Cliente(texto_send);
+                           System.out.println(client.sendEcho(msg_udp));
                        } catch (IOException e) {
                            e.printStackTrace();
                        }
@@ -145,7 +155,6 @@ public class Cliente extends Thread{
         Cliente cliente = new Cliente();
         cliente.start();
         ip = args[0];
-        System.out.println(args[0]);
     }
 
 
