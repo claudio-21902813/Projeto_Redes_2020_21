@@ -103,14 +103,13 @@ class Server_Manager implements Runnable{
                         break;
                     }
                     case "2":{
-                        udp_socket = new DatagramSocket(4445);
+                        System.out.println("Recebido");
+                        udp_socket = new DatagramSocket();
                             try {
-                                DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                                udp_socket.receive(packet);
-                                InetAddress address = packet.getAddress();
-                                int port = packet.getPort();
-                                packet = new DatagramPacket(buf, buf.length, address, port);
+                                this.address = InetAddress.getByName("192.168.10.90");
+                                DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 4445);
                                 String received = new String(packet.getData(), 0, packet.getLength());
+                                System.out.printf(received);
                                 udp_socket.send(packet);
                             } catch (IOException e) {
                                 e.printStackTrace();

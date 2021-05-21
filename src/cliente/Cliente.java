@@ -42,11 +42,7 @@ public class Cliente extends Thread{
         DatagramPacket packet
                 = new DatagramPacket(buf, buf.length, address, 4445);
         udp_socket.send(packet);
-        packet = new DatagramPacket(buf, buf.length);
-        udp_socket.receive(packet);
-        String received = new String(
-                packet.getData(), 0, packet.getLength());
-        return received;
+        return "received";
     }
 
     public void run()
@@ -54,6 +50,7 @@ public class Cliente extends Thread{
         Socket socket = null;
         try {
             socket = new Socket(ip, 6500);
+            socket.setSoTimeout(10*1000);
             BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintStream ps = new PrintStream(socket.getOutputStream());
             String menu = br.readLine();
@@ -96,10 +93,10 @@ public class Cliente extends Thread{
                         String texto_send = teclado.nextLine();
                         System.out.println("Qual a mensagem?");
                         String msg_udp = teclado.nextLine();
-                        ps.println("2");
                         try {
                             Cliente client = new Cliente(texto_send);
                             System.out.println(client.sendEcho(msg_udp));
+                            ps.println("2");
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
