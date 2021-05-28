@@ -12,17 +12,14 @@ public class MessagemUDP {
 
     public MessagemUDP(String address) throws SocketException,
             UnknownHostException {
-        socket = new DatagramSocket();
+        socket = new DatagramSocket(9031);
         this.address = InetAddress.getByName(address);
     }
 
 
-    public String sendEcho(String msg) throws IOException {
-        buf = msg.getBytes();
-        DatagramPacket packet
-                = new DatagramPacket(buf, buf.length, address, 4445);
-        socket.send(packet);
-        packet = new DatagramPacket(buf, buf.length);
+    public String sendEcho() throws IOException {
+        buf = new byte[256];
+        DatagramPacket packet = new DatagramPacket(buf, buf.length);
         socket.receive(packet);
         String received = new String(
                 packet.getData(), 0, packet.getLength());
@@ -34,8 +31,8 @@ public class MessagemUDP {
 
     public static void main(String[] args) {
         try {
-            MessagemUDP client = new MessagemUDP("127.0.0.1");
-            System.out.println("Mensagem recebida: " + client.sendEcho("nada"));
+            MessagemUDP client = new MessagemUDP(args[0]);
+            System.out.println("Mensagem recebida: " + client.sendEcho());
         } catch (IOException e) {
             e.printStackTrace();
         }
