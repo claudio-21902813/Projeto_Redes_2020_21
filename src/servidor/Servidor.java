@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.*;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Servidor {
@@ -29,7 +30,7 @@ public class Servidor {
         listaNegra.put("192.168.1.223","OFFLINE");
         listaNegra.put("192.168.1.224","OFFLINE");
 
-        ServerSocket server = new ServerSocket(6500);
+        ServerSocket server = new ServerSocket(7142);
         Socket socket = null;
         while(true)
         {
@@ -102,12 +103,16 @@ class Server_Manager implements Runnable{
                         break;
                     }
                     case "2":{
-                        System.out.println("a enviar mensagem para:");
+                        printStream.println("Qual o ip a enviar msg?");
+                        String ip = reader.readLine();
+                        printStream.println("qual a msg? ");
+                        String msg = reader.readLine();
+                        System.out.println("ip=" + ip + " msg " + msg);
+                        byte[] bufferMSG = msg.getBytes();
                         udp_socket = new DatagramSocket();
                             try {
-                                this.address = InetAddress.getByName("192.168.10.91");
-                                DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 4445);
-                                String received = new String(packet.getData(), 0, packet.getLength());
+                                this.address = InetAddress.getByName(ip);
+                                DatagramPacket packet = new DatagramPacket(bufferMSG, bufferMSG.length, address, 9031);
                                 udp_socket.send(packet);
                             } catch (IOException e) {
                                 e.printStackTrace();
