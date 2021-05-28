@@ -19,7 +19,15 @@ public class Cliente extends Thread{
     private byte[] buf = new byte[256];
     private DatagramSocket udp_socket;
     private InetAddress address;
-
+    private static final String TEXTO_MENU = "MENU CLIENTE" +
+            "\n"+
+            "0 - Menu Inicial\n"+
+            "1 - Listar utilizadores online\n"+//tcp
+            "2 - Enviar mensagem a um utilizador\n"+//tcp + udp
+            "3 - Enviar mensagens a todos os utilizadores\n"+ //tcp + udp
+            "4 - Lista branca de utilizadores\n"+ //tcp
+            "5 - Lista negra de utilizadores\n"+ //tcp
+            "99 - Sair\n";
     public static Scanner teclado;
 
         /*
@@ -37,29 +45,22 @@ public class Cliente extends Thread{
     public Cliente(){
     }
 
-    public String sendEcho(String msg) throws IOException {
+    public void sendEcho(String msg) throws IOException {
         buf = msg.getBytes();
         DatagramPacket packet
                 = new DatagramPacket(buf, buf.length, address, 4445);
         udp_socket.send(packet);
-        return "received";
     }
 
     public void run()
     {
         Socket socket = null;
+        System.out.println(TEXTO_MENU);
         try {
             socket = new Socket(ip, 6500);
-            socket.setSoTimeout(10*1000);
+            //socket.setSoTimeout(10*1000);
             BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintStream ps = new PrintStream(socket.getOutputStream());
-            String menu = br.readLine();
-            while (!(menu.equals("")))
-            {
-                System.out.println(menu);
-                menu = br.readLine();
-            }
-            //System.out.println(TEXTO_MENU);
             String opcao = "";
             do {
                 System.out.println("digite um comando-> ");
@@ -68,7 +69,7 @@ public class Cliente extends Thread{
                 {
                     case "0":{ // easy
                         ps.println("0");
-                        menu = br.readLine();
+                        String menu = br.readLine();
                         while (!(menu.equals("")))
                         {
                             System.out.println(menu);
@@ -95,7 +96,7 @@ public class Cliente extends Thread{
                         String msg_udp = teclado.nextLine();
                         try {
                             Cliente client = new Cliente(texto_send);
-                            System.out.println(client.sendEcho(msg_udp));
+                            client.sendEcho(msg_udp);
                             ps.println("2");
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -151,7 +152,6 @@ public class Cliente extends Thread{
         teclado = new Scanner(System.in);
         Cliente cliente = new Cliente();
         cliente.start();
-        System.out.println("fechado");
         ip = args[0];
     }
 

@@ -19,9 +19,9 @@ public class Servidor {
 
         //default listaBranca
         listaBranca = new HashMap<>();
-        listaBranca.put("127.0.0.1","OFFLINE");
-        listaBranca.put("127.0.0.2","OFFLINE");
-        listaBranca.put("127.0.0.3","OFFLINE");
+        listaBranca.put("192.168.10.91","OFFLINE");
+        listaBranca.put("192.168.10.90","OFFLINE");
+        listaBranca.put("192.168.15.74","OFFLINE");
 
         //default listaNegra
         listaNegra = new HashMap<>();
@@ -34,7 +34,7 @@ public class Servidor {
         while(true)
         {
             socket = server.accept();
-            System.out.println("cliente connectado !");
+            System.out.println("cliente " + socket.getInetAddress().getHostAddress() + " foi conectado!");
             //verificar nas tabelas
             for (String host : listaBranca.keySet()){
                 if(host.equals(socket.getInetAddress().getHostAddress()))
@@ -80,7 +80,6 @@ class Server_Manager implements Runnable{
     public void run(){
         try {
             String pedido = "";
-            printStream.println(TEXTO_MENU);
             do {
                 pedido = reader.readLine();
                 if(pedido==null){
@@ -103,13 +102,12 @@ class Server_Manager implements Runnable{
                         break;
                     }
                     case "2":{
-                        System.out.println("Recebido");
+                        System.out.println("a enviar mensagem para:");
                         udp_socket = new DatagramSocket();
                             try {
-                                this.address = InetAddress.getByName("192.168.10.90");
+                                this.address = InetAddress.getByName("192.168.10.91");
                                 DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 4445);
                                 String received = new String(packet.getData(), 0, packet.getLength());
-                                System.out.printf(received);
                                 udp_socket.send(packet);
                             } catch (IOException e) {
                                 e.printStackTrace();
