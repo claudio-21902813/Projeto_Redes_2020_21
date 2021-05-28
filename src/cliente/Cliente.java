@@ -48,7 +48,7 @@ public class Cliente extends Thread{
     public void sendEcho(String msg) throws IOException {
         buf = msg.getBytes();
         DatagramPacket packet
-                = new DatagramPacket(buf, buf.length, address, 4445);
+                = new DatagramPacket(buf, buf.length, address, 9031);
         udp_socket.send(packet);
     }
 
@@ -57,7 +57,7 @@ public class Cliente extends Thread{
         Socket socket = null;
         System.out.println(TEXTO_MENU);
         try {
-            socket = new Socket(ip, 6500);
+            socket = new Socket(ip, 7142);
             //socket.setSoTimeout(10*1000);
             BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintStream ps = new PrintStream(socket.getOutputStream());
@@ -90,14 +90,25 @@ public class Cliente extends Thread{
                         break;
                     }
                     case "2":{//enviar msg a um host online
-                        System.out.println("Qual o ip a enviar a msg?");
-                        String texto_send = teclado.nextLine();
-                        System.out.println("Qual a mensagem?");
-                        String msg_udp = teclado.nextLine();
+                        ps.println("1");
+                        System.out.println("****** ONLINE ******");
+                        System.out.println("  HOST       Status  ");
+                        String msg = br.readLine();
+                        while (!(msg.equals("")))
+                        {
+                            System.out.println(msg);
+                            msg = br.readLine();
+                        }
                         try {
-                            Cliente client = new Cliente(texto_send);
-                            client.sendEcho(msg_udp);
                             ps.println("2");
+                            System.out.println(br.readLine());
+                            String ip_send = teclado.nextLine();
+                            ps.println(ip_send);
+                            System.out.println(br.readLine());
+                            String msg_udp = teclado.nextLine();
+                            ps.println(msg_udp);
+                            Cliente client = new Cliente(ip);
+                            client.sendEcho(msg_udp);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
