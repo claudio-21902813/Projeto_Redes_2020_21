@@ -61,6 +61,13 @@ public class Cliente extends Thread{
             //socket.setSoTimeout(10*1000);
             BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintStream ps = new PrintStream(socket.getOutputStream());
+
+
+                if (br.readLine().equals("block")){
+                    System.err.println("O seu ip esta na lista Negra\n Contacte o administrador");
+                    System.exit(1);
+                }
+
             String opcao = "";
             do {
                 System.out.println("digite um comando-> ");
@@ -114,6 +121,15 @@ public class Cliente extends Thread{
                         }
                         break;
                     }
+                    case "3":{
+                        ps.println("3");
+                        System.out.println(br.readLine());
+                        String msg = teclado.nextLine();
+                        ps.println(msg);
+                        Cliente client = new Cliente(ip);
+                        client.sendEcho(msg);
+                        break;
+                    }
                     case "4":
                     {
                         ps.println("4");
@@ -160,6 +176,12 @@ public class Cliente extends Thread{
      */
 
     public static void main(String[] args) {
+        //verifica os argumentos
+
+        if(args.length != 1){
+            System.err.println("Usagem: java cliente.java <ip do servidor>");
+            System.exit(1);
+        }
         teclado = new Scanner(System.in);
         Cliente cliente = new Cliente();
         cliente.start();
