@@ -19,17 +19,16 @@ public class Servidor {
 
         //default listaBranca
         listaBranca = new HashMap<>();
-        listaBranca.put("192.168.1.68","OFFLINE");
+        listaBranca.put("192.168.15.74","OFFLINE");
         listaBranca.put("192.168.10.90","OFFLINE");
         listaBranca.put("192.168.1.97","OFFLINE");
-        listaNegra.put("127.0.0.1","OFFLINE");
 
         //default listaNegra
         listaNegra = new HashMap<>();
-        listaNegra.put("192.168.1.97","OFFLINE");
-        listaNegra.put("192.168.10.99","OFFLINE");
+        listaNegra.put("192.168.1.12","OFFLINE");
+        listaNegra.put("192.168.10.11","OFFLINE");
+        listaNegra.put("127.0.0.1","OFFLINE");
 
-        listaOnline.put("192.168.1.68","ONLINE");
         ServerSocket server = new ServerSocket(7142);
         Socket socket = null;
         while(true)
@@ -115,7 +114,7 @@ class Server_Manager implements Runnable{
                     case "2":{
                         printStream.println("Qual o ip a enviar msg?");
                         String ip = reader.readLine();
-                        printStream.println("qual a msg? ");
+                        printStream.println("Qual a msg? ");
                         String msg = reader.readLine();
                         System.out.println("ip=" + ip + " msg " + msg);
                         byte[] bufferMSG = msg.getBytes();
@@ -128,11 +127,10 @@ class Server_Manager implements Runnable{
                                 e.printStackTrace();
                             }
                         udp_socket.close();
-                        printStream.println("UDP a fechar...");
                         break;
                     }
                     case "3":{
-                        printStream.println("qual a msg a enviar para todos os host's ? ");
+                        printStream.println("Qual a msg a enviar para todos os host's ? ");
                         String msg = reader.readLine();
                         byte[] bufferMSG = msg.getBytes();
                         udp_socket = new DatagramSocket();
