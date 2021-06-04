@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.net.*;
 
 
-public class MessagemUDP {
+public class MsgUDP {
     private DatagramSocket socket;
     private InetAddress address;
     private byte[] buf;
 
 
-    public MessagemUDP(String address) throws SocketException,
+    public MsgUDP(String address) throws SocketException,
             UnknownHostException {
         socket = new DatagramSocket(9031);
         this.address = InetAddress.getByName(address);
@@ -31,7 +31,7 @@ public class MessagemUDP {
 
     public static void main(String[] args) {
         try {
-            MessagemUDP client = new MessagemUDP(args[0]);
+            MsgUDP client = new MsgUDP(args[0]);
             System.out.println("Mensagem recebida: " + client.sendEcho());
         } catch (IOException e) {
             e.printStackTrace();
