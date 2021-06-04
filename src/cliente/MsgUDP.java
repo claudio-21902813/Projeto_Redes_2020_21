@@ -17,13 +17,15 @@ public class MsgUDP {
     }
 
 
-    public String sendEcho() throws IOException {
-        buf = new byte[256];
-        DatagramPacket packet = new DatagramPacket(buf, buf.length);
-        socket.receive(packet);
-        String received = new String(
-                packet.getData(), 0, packet.getLength());
-        return received;
+    public void sendEcho() throws IOException {
+        while(true) {
+            buf = new byte[256];
+            DatagramPacket packet = new DatagramPacket(buf, buf.length);
+            socket.receive(packet);
+            String received = new String(
+                    packet.getData(), 0, packet.getLength());
+            System.out.println(received);
+        }
     }
     public void close() {
         socket.close();
@@ -32,7 +34,7 @@ public class MsgUDP {
     public static void main(String[] args) {
         try {
             MsgUDP client = new MsgUDP(args[0]);
-            System.out.println("Mensagem recebida: " + client.sendEcho());
+            client.sendEcho();
         } catch (IOException e) {
             e.printStackTrace();
         }

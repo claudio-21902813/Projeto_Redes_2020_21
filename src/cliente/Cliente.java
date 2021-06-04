@@ -36,20 +36,7 @@ public class Cliente extends Thread{
         ##################
         */
 
-    public Cliente(String address) throws SocketException,
-            UnknownHostException {
-        udp_socket = new DatagramSocket();
-        this.address = InetAddress.getByName(address);
-    }
-
     public Cliente(){
-    }
-
-    public void sendEcho(String msg) throws IOException {
-        buf = msg.getBytes();
-        DatagramPacket packet
-                = new DatagramPacket(buf, buf.length, address, 9031);
-        udp_socket.send(packet);
     }
 
     public void run()
@@ -161,7 +148,8 @@ public class Cliente extends Thread{
 
             }while (!opcao.equals("99"));
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Erro - Não foi possivel estabelecer ligação");
+            System.exit(1);
         }
     }
 
