@@ -114,8 +114,6 @@ public class Cliente extends Thread{
                             System.out.println(br.readLine());
                             String msg_udp = teclado.nextLine();
                             ps.println(msg_udp);
-                            Cliente client = new Cliente(ip);
-                            client.sendEcho(msg_udp);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -126,8 +124,6 @@ public class Cliente extends Thread{
                         System.out.println(br.readLine());
                         String msg = teclado.nextLine();
                         ps.println(msg);
-                        Cliente client = new Cliente(ip);
-                        client.sendEcho(msg);
                         break;
                     }
                     case "4":
